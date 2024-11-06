@@ -1,0 +1,47 @@
+python
+Copy code
+import fitz  # PyMuPDF
+import pdfplumber
+from markdownify import markdownify as md
+
+# Path to your PDF file
+pdf_path = "path/to/your/document.pdf"
+markdown_content = ""
+
+# Step 3: Extract text content from the PDF pages
+with fitz.open(pdf_path) as pdf_document:
+    # Loop through each page in the PDF
+    for page_num in range(pdf_document.page_count):
+        page = pdf_document[page_num]
+        
+        # Extract text from the page in HTML format for better Markdown conversion
+        page_text = page.get_text("html")
+        page_markdown = md(page_text)
+        
+        # Append the page markdown to the final content with a page separator
+        markdown_content += f"# Page {page_num + 1}\n\n" + page_markdown + "\n\n"
+
+# Step 4: Extract tables from the PDF pages
+with pdfplumber.open(pdf_path) as pdf:
+    for page_num, page in enumerate(pdf.pages):
+        tables = page.extract_tables()
+        
+        for table_num, table in enumerate(tables):
+            markdown_content += f"## Table on Page {page_num + 1} - Table {table_num + 1}\n\n"
+            
+            # Convert each table row to Markdown format
+            for row in table:
+                # Join each cell in the row with " | " for Markdown table format
+                markdown_content += "| " + " | ".join(str(cell) if cell is not None else "" for cell in row) + " |\n"
+            
+            # Add Markdown table header separator (assuming each row has equal length cells)
+            if table:
+                header_separator = "| " + " | ".join("---" for _ in table[0]) + " |\n"
+                markdown_content += header_separator + "\n"
+
+# Step 5: Save the content to a Markdown file
+output_file = "output_with_tables.md"
+with open(output_file, "w", encoding="utf-8") as md_file:
+    md_file.write(markdown_content)
+
+print(f"PDF with tables converted to Markdown and saved as '{output_file}'")
