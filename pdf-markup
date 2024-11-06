@@ -1,3 +1,33 @@
+Using camelot
+
+import camelot
+
+# Path to your PDF file
+pdf_path = "path/to/your/document.pdf"
+markdown_content = ""
+
+# Extract tables from the PDF
+tables = camelot.read_pdf(pdf_path, pages="all", flavor="stream")  # 'stream' works well with table lines; use 'lattice' for bordered tables
+
+# Iterate over each table extracted by camelot
+for table_num, table in enumerate(tables):
+    markdown_content += f"## Table {table_num + 1}\n\n"
+    
+    # Convert the table to a Pandas DataFrame
+    df = table.df  # DataFrame structure makes it easier to manipulate
+    
+    # Convert DataFrame to Markdown format
+    markdown_table = df.to_markdown(index=False)  # Exclude row index for cleaner output
+    markdown_content += markdown_table + "\n\n"
+
+# Save the content to a Markdown file
+output_file = "output_tables_markdown.md"
+with open(output_file, "w", encoding="utf-8") as md_file:
+    md_file.write(markdown_content)
+
+print(f"Tables from PDF extracted and saved as '{output_file}' in Markdown format")
+------------------------------------------------------------------------------------------------------------------------------
+
 import fitz  # PyMuPDF
 import pdfplumber
 from markdownify import markdownify as md
