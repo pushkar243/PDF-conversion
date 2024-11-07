@@ -1,3 +1,49 @@
+***********07-11
+
+import fitz  # PyMuPDF
+import camelot
+from markdownify import markdownify as md
+
+# Path to your PDF file
+pdf_path = "path/to/your/document.pdf"
+markdown_content = ""
+
+# Step 1: Extract text content from the PDF pages using PyMuPDF
+with fitz.open(pdf_path) as pdf_document:
+    for page_num in range(pdf_document.page_count):
+        page = pdf_document[page_num]
+        
+        # Extract text using the 'blocks' method to maintain some layout
+        page_text_blocks = page.get_text("blocks")
+        markdown_content += f"# Page {page_num + 1}\n\n"
+        
+        for block in page_text_blocks:
+            text_block = block[4]  # The fifth element contains the actual text
+            if text_block.strip():
+                markdown_block = md(text_block)
+                markdown_content += markdown_block + "\n\n"
+
+# Step 2: Extract tables from the PDF pages using Camelot
+tables = camelot.read_pdf(pdf_path, pages="all", flavor="stream")  # 'stream' or 'lattice' depending on the table type
+
+for table_num, table in enumerate(tables):
+    markdown_content += f"## Table {table_num + 1}\n\n"
+    
+    # Convert the table to a Pandas DataFrame and then to Markdown
+    df = table.df
+    markdown_table = df.to_markdown(index=False)  # Convert DataFrame to Markdown format
+    markdown_content += markdown_table + "\n\n"
+
+# Step 3: Save the combined text and table content to a Markdown file
+output_file = "combined_output.md"
+with open(output_file, "w", encoding="utf-8") as md_file:
+    md_file.write(markdown_content)
+
+print(f"PDF content (text and tables) extracted and saved as '{output_file}'")
+
+###############################################################################################
+
+
 Using camelot
 
 import camelot
