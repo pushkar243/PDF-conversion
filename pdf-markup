@@ -27,7 +27,11 @@ for table_num, table in enumerate(tables):
     markdown_content += "\n"  # Separate tables with a newline
 
 # Save the combined content to a Markdown file
-output_file = "output_tab
+output_file = "output_tab_markdown.md"
+with open(output_file, "w", encoding="utf-8") as md_file:
+    md_file.write(markdown_content)
+
+print(f"Tables from PDF extracted and formatted as Markdown in '{output_file}'")
 
 ***********07-11
 
