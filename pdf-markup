@@ -5,7 +5,7 @@ pdf_path = "path/to/your/document.pdf"
 markdown_content = ""
 
 # Extract tables from the PDF using Camelot
-tables = camelot.read_pdf(pdf_path, pages="all", flavor="stream")  # 'lattice' can also be used for better structured tables
+tables = camelot.read_pdf(pdf_path, pages="all", flavor="stream")  # 'lattice' for bordered tables
 
 for table_num, table in enumerate(tables):
     markdown_content += f"## Table {table_num + 1}\n\n"
@@ -14,25 +14,20 @@ for table_num, table in enumerate(tables):
     df = table.df
     
     # Generate Markdown header and separator line
-    header_row = "| " + " | ".join(df.columns) + " |\n"
+    header_row = "| " + " | ".join(str(column) for column in df.columns) + " |\n"
     separator_row = "| " + " | ".join("---" for _ in df.columns) + " |\n"
     markdown_content += header_row + separator_row
     
     # Generate table rows
     for _, row in df.iterrows():
-        # Ensure all columns are on the same line
+        # Convert each cell to a string and replace any newlines with spaces
         markdown_row = "| " + " | ".join(str(cell).replace("\n", " ") for cell in row) + " |\n"
         markdown_content += markdown_row
     
     markdown_content += "\n"  # Separate tables with a newline
 
 # Save the combined content to a Markdown file
-output_file = "output_tables_markdown.md"
-with open(output_file, "w", encoding="utf-8") as md_file:
-    md_file.write(markdown_content)
-
-print(f"Tables from PDF extracted and formatted as Markdown in '{output_file}'")
-
+output_file = "output_tab
 
 ***********07-11
 
