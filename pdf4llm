@@ -1,1 +1,16 @@
 pip install pdf4llm transformers pytesseract pdfplumber camelot pandas
+from pdf4llm import PdfReader
+
+# Initialize PDF Reader
+reader = PdfReader()
+
+# Load the financial document
+doc = reader.load_pdf("financial_document.pdf")
+
+# Extract structured data
+structured_data = doc.to_json()
+
+# Explore the structured data
+print("Extracted Text:", structured_data.get('text'))
+print("Extracted Tables:", structured_data.get('tables'))
+print("Extracted Images:", structured_data.get('images'))
