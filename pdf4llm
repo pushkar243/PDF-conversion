@@ -1,0 +1,1 @@
+pip install pdf4llm transformers pytesseract pdfplumber camelot pandas
